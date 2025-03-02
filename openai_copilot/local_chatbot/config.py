@@ -10,7 +10,7 @@ if not API_KEY:
     raise ValueError("Missing API_KEY in environment variables. Please set it in your .env file.")
 
 # Retrieve the model setting with a default value if not set
-MODEL = os.getenv("MODEL", "gpt-3.5-turbo")
+MODEL = os.getenv("MODEL", "gpt-4o-mini")
 
 
-print(API_KEY)
+print(MODEL)
