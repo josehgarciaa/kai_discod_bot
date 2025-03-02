@@ -13,4 +13,3 @@ if not API_KEY:
 MODEL = os.getenv("MODEL", "gpt-4o-mini")
 
 
-print(MODEL)
