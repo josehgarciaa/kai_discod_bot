@@ -61,3 +61,4 @@ if __name__ == "__main__":
         1 / 0  # Generate an error for testing
     except Exception as err:
         handle_error(err)
+    
