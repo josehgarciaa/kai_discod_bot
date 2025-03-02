@@ -11,3 +11,6 @@ if not API_KEY:
 
 # Retrieve the model setting with a default value if not set
 MODEL = os.getenv("MODEL", "gpt-3.5-turbo")
+
+
+print(API_KEY)
