@@ -78,12 +78,12 @@ def main():
     Entry point for starting a chat session.
     Optionally, admin instructions can be passed as a command-line argument.
     """
-    admin_instructions = None
-    if len(sys.argv) > 1:
-        admin_instructions = sys.argv[1]
+    #admin_instructions = None
+    #if len(sys.argv) > 1:
+    #    admin_instructions = sys.argv[1]
 
-    chatbot = ChatBot(admin_instructions=admin_instructions)
-    chatbot.start_chat()
+    #chatbot = ChatBot(admin_instructions=admin_instructions)
+    #chatbot.start_chat()
 
 if __name__ == "__main__":
     main()

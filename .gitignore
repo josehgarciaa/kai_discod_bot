@@ -9,7 +9,6 @@
 *.user
 *.userosscache
 *.sln.docstates
-*.env
 .env
 
 # Ignore virtual environments (if any)
