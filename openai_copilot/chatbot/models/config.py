@@ -28,62 +28,39 @@ class ModelConfig:
         Initializes default values for all parameters. These defaults reflect
         either the documented API defaults or typical starting points.
         """
-        # Required
-        self.messages: List[Any] = []
-        self.model: str = ""
-
         # Optional (with documented defaults or None)
-        self.store: Optional[bool] = False
-        self.reasoning_effort: Optional[str] = "medium"
-        self.metadata: Dict[str, str] = {}
+        self.store: bool = False
+        self.reasoning_effort: str = None
+        self.metadata: Dict[str, str] = None
         self.frequency_penalty: float = 0.0
-        self.logit_bias: Dict[str, float] = {}
-        self.logprobs: Optional[bool] = False
-        self.top_logprobs: Optional[int] = None
-        self.max_completion_tokens: Optional[int] = None
+        self.logit_bias: Dict[str, float] = None
+        self.logprobs: bool = False
+        self.top_logprobs: int = None
+        self.max_completion_tokens: int = None
         self.n: int = 1
-        self.modalities: Optional[List[str]] = None
-        self.prediction: Optional[Dict[str, Any]] = None
-        self.audio: Optional[Dict[str, Any]] = None
+        self.prediction: Dict[str, Any] = None
         self.presence_penalty: float = 0.0
-        self.response_format: Optional[Dict[str, Any]] = None
-        self.seed: Optional[int] = None
-        self.service_tier: Optional[str] = "auto"
+        self.seed: int = None
+        self.service_tier: str = "auto"
         self.stop: Union[str, List[str], None] = None
-        self.stream: Optional[bool] = False
-        self.stream_options: Optional[Dict[str, Any]] = None
         self.temperature: float = 1.0
         self.top_p: float = 1.0
-        self.tools: Optional[List[Any]] = None
         self.tool_choice: Union[str, Dict[str, Any]] = "none"
-        self.parallel_tool_calls: bool = True
-        self.user: str = ""
 
-        # Deprecated
-        self.function_call: Any = None
-        self.functions: Any = None
-
-    def set_messages(self, messages: List[Any]) -> "ModelConfig":
-        """
-        Set the conversation messages for the model.
-
-        :param messages: A list of messages (array) representing the
-                         conversation so far. Can include text, images, or audio
-                         elements depending on the model's capabilities.
-        :return: The current ModelConfig instance.
-        """
-        self.messages = messages
-        return self
-
-    def set_model(self, model: str) -> "ModelConfig":
-        """
-        Set the model ID to use.
-
-        :param model: Required. The model identifier (e.g., "gpt-4").
-        :return: The current ModelConfig instance.
-        """
-        self.model = model
-        return self
+        #output types
+        #self.modalities: List[str] = None
+        #Output types that you would like the model to generate for this request. Most models are capable of generating text, which is the default:
+        #["text"]
+        # The gpt-4o-audio-preview model can also be used to generate audio. To request that this model generate both text and audio responses, you can use:
+        # ["text", "audio"]
+        #self.audio: Dict[str, Any] = None
+        #self.response_format: Dict[str, Any] = None
+        #self.stream: bool = False
+        #self.stream_options: Dict[str, Any] = None
+        #self.tools: List[Any] = None
+        #self.parallel_tool_calls: bool = True
+        #self.user: str = ""
+        
 
     def set_store(self, store: bool) -> "ModelConfig":
         """
@@ -185,39 +162,6 @@ class ModelConfig:
         self.n = n
         return self
 
-    def set_modalities(self, modalities: List[str]) -> "ModelConfig":
-        """
-        Specify which output types the model should generate.
-
-        :param modalities: E.g., ["text"] or ["text", "audio"] if using
-                           an audio-capable model.
-        :return: The current ModelConfig instance.
-        """
-        self.modalities = modalities
-        return self
-
-    def set_prediction(self, prediction: Dict[str, Any]) -> "ModelConfig":
-        """
-        Provide configuration for a Predicted Output.
-
-        :param prediction: Enhances response times if large parts of
-                           the model response are pre-known.
-        :return: The current ModelConfig instance.
-        """
-        self.prediction = prediction
-        return self
-
-    def set_audio(self, audio: Dict[str, Any]) -> "ModelConfig":
-        """
-        Configure audio output parameters.
-
-        :param audio: Required if audio output is requested with
-                      modalities=["audio"].
-        :return: The current ModelConfig instance.
-        """
-        self.audio = audio
-        return self
-
     def set_presence_penalty(self, penalty: float) -> "ModelConfig":
         """
         Penalize tokens based on whether they appear in the text so far.
@@ -227,18 +171,6 @@ class ModelConfig:
         :return: The current ModelConfig instance.
         """
         self.presence_penalty = penalty
-        return self
-
-    def set_response_format(self, fmt: Dict[str, Any]) -> "ModelConfig":
-        """
-        Specify the format for the model's output.
-
-        :param fmt: An object describing the output format, such as
-                    {"type": "json_schema", "json_schema": {...}} or
-                    {"type": "json_object"} for JSON-mode responses.
-        :return: The current ModelConfig instance.
-        """
-        self.response_format = fmt
         return self
 
     def set_seed(self, seed: int) -> "ModelConfig":
@@ -273,27 +205,6 @@ class ModelConfig:
         self.stop = stop
         return self
 
-    def set_stream(self, stream: bool) -> "ModelConfig":
-        """
-        Toggle streaming mode for partial token outputs.
-
-        :param stream: Defaults to False. If True, tokens are returned
-                       as data-only server-sent events until done.
-        :return: The current ModelConfig instance.
-        """
-        self.stream = stream
-        return self
-
-    def set_stream_options(self, options: Dict[str, Any]) -> "ModelConfig":
-        """
-        Specify additional streaming response options.
-
-        :param options: Only relevant if stream=True.
-        :return: The current ModelConfig instance.
-        """
-        self.stream_options = options
-        return self
-
     def set_temperature(self, temperature: float) -> "ModelConfig":
         """
         Control randomness in sampling between 0 and 2.
@@ -315,72 +226,6 @@ class ModelConfig:
         :return: The current ModelConfig instance.
         """
         self.top_p = top_p
-        return self
-
-    def set_tools(self, tools: List[Any]) -> "ModelConfig":
-        """
-        Supply a list of tools (functions) the model may call.
-
-        :param tools: A list of up to 128 functions. The model can generate
-                      JSON inputs for these functions if tool_choice allows it.
-        :return: The current ModelConfig instance.
-        """
-        self.tools = tools
-        return self
-
-    def set_tool_choice(
-        self, choice: Union[str, Dict[str, Any]]
-    ) -> "ModelConfig":
-        """
-        Control if and how the model calls tools.
-
-        :param choice: "none", "auto", "required", or a dict specifying
-                       a specific tool. Defaults to "none" if no tools are set.
-        :return: The current ModelConfig instance.
-        """
-        self.tool_choice = choice
-        return self
-
-    def enable_parallel_tool_calls(self, enable: bool) -> "ModelConfig":
-        """
-        Enable or disable parallel tool calls.
-
-        :param enable: Defaults to True. If True, the model may call
-                       multiple tools in parallel.
-        :return: The current ModelConfig instance.
-        """
-        self.parallel_tool_calls = enable
-        return self
-
-    def set_user(self, user: str) -> "ModelConfig":
-        """
-        Attach a unique user identifier for analytics or abuse detection.
-
-        :param user: A string identifying the end user. Helps monitor
-                     usage patterns.
-        :return: The current ModelConfig instance.
-        """
-        self.user = user
-        return self
-
-    def set_function_call(self, fn_call: Any) -> "ModelConfig":
-        """
-        Deprecated in favor of tool_choice. Controls which function is called.
-
-        :param fn_call: Allows specifying none, auto, or a particular function.
-        :return: The current ModelConfig instance.
-        """
-        self.function_call = fn_call
-        return self
-
-    def set_functions(self, functions: Any) -> "ModelConfig":
-        """
-        Deprecated in favor of tools. A list of functions the model may call.
-
-        :param functions: Similar to tools, but older usage.
-        :return: The current ModelConfig instance.
-        """
-        self.functions = functions
         return self
 
     def build(self) -> "ModelConfig":
