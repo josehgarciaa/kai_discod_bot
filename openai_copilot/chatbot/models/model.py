@@ -21,8 +21,9 @@ class Model:
         Initialize default values for all configurable fields. These defaults
         can be overridden by calling the provided setter methods.
         """
-        self.administrator: str = ""
-        self.modalities: Optional[List[str]] = None
+        self.administrator: str = "You are a useful assistant"
+        self.model: str = "gpt-4o-mini"
+        self.modalities: Optional[List[str]] = ["text"]
         self.audio: Optional[Dict[str, Any]] = None
         self.response_format: Optional[Dict[str, Any]] = None
         self.stream: bool = False
