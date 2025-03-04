@@ -1,32 +1,34 @@
-from models import BaseModel
-#from .strategies import MarkdownStrategy, PlainTextStrategy, JSONStrategy
+# default_director.py
+# -*- coding: utf-8 -*-
+
+"""
+Defines a Director class (DefaultDirector) responsible for building a default
+Model configuration using the builder methods from the Model class.
+"""
+
+from model import Model
 
 
+class DefaultDirector:
+    """
+    The Director in the Builder pattern, responsible for providing
+    a default (preset) configuration of the Model.
+    """
 
-class ModelDirector:
-    def __init__(self, xx):
-        self.developer="Useful"
-        self.model="Useful"
-        self.memory="Useful"
-        self.output = None
-        
-    def standardConfig(basemodel):
-        return basemodel
+    @staticmethod
+    def build_default() -> Model:
+        """
+        Create and return a default-configured Model instance.
 
-#class ModelFactory:
- #   @staticmethod
-  #  def create_model(parameters, output_type="plain_text"):
-        # Strategy pattern applied here explicitly
- #       strategies = {
- #           "plain_text": PlainTextStrategy(),
- #           "markdown": MarkdownStrategy(),
- #           "json": JSONStrategy(),
-  #      }
-        
-  #      strategy = strategies[output_type]
-
-   #     if parameters['model_name'] == "gpt-4-vision":
-   #         # Assuming you have GPTVisionModel defined.
-   #         return GPTOmniModel(parameters, strategy)
-   #     else:
-    #        return GPTReasoningModel(parameters, strategy)
+        :return: A fully built Model with default settings.
+        """
+        return (
+            Model()
+            # If you have certain "default" overrides, set them here:
+            .set_administrator("admin_user")      # example default
+            .set_modalities(["text"])             # typical single-modality default
+            .set_stream(False)                    # no streaming by default
+            .enable_parallel_tool_calls(True)      # allow parallel tool calls
+            # Etc. add any fields you want to customize for "default"
+            .build()
+        )
