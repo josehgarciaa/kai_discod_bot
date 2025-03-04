@@ -15,7 +15,7 @@ PEP 8 compliance note:
 from typing import Any, Dict, List, Optional, Union
 
 
-class ModelConfig:
+class Config:
     """
     A builder-style class for configuring chat completion parameters.
 
