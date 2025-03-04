@@ -31,6 +31,10 @@ class ModelConfigBuilder:
         self._parallel_tool_calls: bool = True
         self._user: str = ""
 
+    def build(self):
+        return self
+
+
     def set_model_name(self, model_name: str) -> "ModelBuilder":
         self._model_name = model_name
         return self
