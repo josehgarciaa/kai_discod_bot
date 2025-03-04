@@ -21,8 +21,8 @@ class Model:
         Initialize default values for all configurable fields. These defaults
         can be overridden by calling the provided setter methods.
         """
-        self.administrator: str = "You are a useful assistant"
-        self.model: str = "gpt-4o-mini"
+        self.developer: str = "You are a useful assistant"
+        self.type: str = "gpt-4o-mini"
         self.modalities: Optional[List[str]] = ["text"]
         self.audio: Optional[Dict[str, Any]] = None
         self.response_format: Optional[Dict[str, Any]] = None
@@ -41,6 +41,17 @@ class Model:
         """
         self.administrator = administrator
         return self
+
+    def set_model_type(self, administrator: str) -> "Model":
+        """
+        Set the administrator identifier for this model configuration.
+
+        :param administrator: The admin or owner responsible for this model.
+        :return: The current Model instance (for fluent chaining).
+        """
+        self.administrator = administrator
+        return self
+
 
     def set_modalities(self, modalities: List[str]) -> "Model":
         """

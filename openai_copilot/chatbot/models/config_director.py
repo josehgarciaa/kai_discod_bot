@@ -17,7 +17,7 @@ class ConfigDirector:
     """
 
     @staticmethod
-    def Default() -> Config:
+    def default_config() -> Config:
         """
         Build and return a ModelConfig instance with default values.
 

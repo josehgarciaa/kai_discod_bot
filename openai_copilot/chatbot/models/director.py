@@ -6,7 +6,7 @@ Defines a Director class (DefaultDirector) responsible for building a default
 Model configuration using the builder methods from the Model class.
 """
 
-from model import Model
+from models import Model
 
 
 class Director:

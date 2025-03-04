@@ -1,7 +1,7 @@
 
 from authentication import AuthenticationFacade
-from models import ModelConfigBuilder,ModelConfigDirector, BaseModel,ModelDirector
-
+from models import Config, ConfigDirector, Model,Director
+from prompt_manager import ConversationManager
 
 def main():
     """
@@ -23,15 +23,12 @@ if __name__ == "__main__":
 #    client = manager.get_client()
 
     # User friendly structured model building clearly:
-    model_config = ModelConfigDirector(ModelConfigBuilder()).standardConfig()
-    model = ModelDirector(BaseModel()).standardConfig()
+    model_config = ConfigDirector.default_config()
+    model = Director.default_model()
 
+    chat = Chat(model, model_config)
 
-    # Client engaging clearly with created model:
-    #conversation_history = []
-    #response = model.generate_response("Explain strategy pattern clearly", conversation_history)
-    #print(response)
+    #reponse = chat.prompt("cosas para el prompt")
+    #history = chat.get_history()
 
-    #print( manager.is_logged_in())
-    
     
