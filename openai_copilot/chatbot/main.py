@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     # User friendly structured model building clearly:
     model_config = ConfigDirector.default_config()
-    model = Director.default_model()
+    model = Director.python_programmer()
 
     monitor = MonitoringService()
     chatbot = ChatManager(authenticator = manager, monitor = monitor)

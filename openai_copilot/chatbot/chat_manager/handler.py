@@ -12,9 +12,9 @@ PEP 8 Compliance:
 """
 
 from typing import List
-from authentication import AuthenticationFacade
+from authentication import AuthenticationService
 from models import Config, Model
-from prompt_manager import  ChatHistory, MonitoringService
+from chat_manager import  ChatHistory, MonitoringService
 
 
 class ChatManager:
@@ -26,7 +26,7 @@ class ChatManager:
     flexibility and avoiding unnecessary state management.
     """
 
-    def __init__(self, authenticator: AuthenticationFacade, monitor: MonitoringService) -> None:
+    def __init__(self, authenticator: AuthenticationService, monitor: MonitoringService) -> None:
         """
         Initializes the ChatManager with authentication, monitoring, and API client.
 
@@ -67,3 +67,6 @@ class ChatManager:
         self.chat_history.add_response(api_response.choices[0].message)
         return self.chat_history
 
+    def clear_history(self):
+        self.chat_history.clear_messages()        
+        self.developer_message = ""

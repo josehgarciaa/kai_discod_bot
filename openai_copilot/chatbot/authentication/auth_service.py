@@ -4,7 +4,7 @@ from openai import OpenAI
 
 
 
-class AuthenticationFacade:
+class AuthenticationService:
     def __init__(self):
         self.session_manager = SessionManager()
         self.client = None

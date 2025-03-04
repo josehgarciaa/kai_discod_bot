@@ -30,12 +30,25 @@ class ChatHistory:
             content=api_response_message.content,
         ))
 
+
+    def get_last_message(self) -> List[Dict[str, str]]:
+        """
+        Returns only role and content as a list of dicts (simplified history).
+        """
+        return self.messages[-1].content
         
     def get_messages(self) -> List[Dict[str, str]]:
         """
         Returns only role and content as a list of dicts (simplified history).
         """
         return [{"role": msg.role, "content": msg.content} for msg in self.messages]
+
+    def clear_messages(self) -> List[Dict[str, str]]:
+        """
+        Returns only role and content as a list of dicts (simplified history).
+        """
+        self.messages= []
+
 
     def __repr__(self) -> str:
         """
