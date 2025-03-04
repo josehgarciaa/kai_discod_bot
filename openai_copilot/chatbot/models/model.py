@@ -32,14 +32,14 @@ class Model:
         self.parallel_tool_calls: bool = True
         self.user: str = ""
 
-    def set_administrator(self, administrator: str) -> "Model":
+    def set_developer_instruction(self, developer: str) -> "Model":
         """
         Set the administrator identifier for this model configuration.
 
         :param administrator: The admin or owner responsible for this model.
         :return: The current Model instance (for fluent chaining).
         """
-        self.administrator = administrator
+        self.developer = developer
         return self
 
     def set_model_type(self, administrator: str) -> "Model":

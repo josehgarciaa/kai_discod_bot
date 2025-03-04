@@ -14,7 +14,7 @@ PEP 8 Compliance:
 from typing import List
 from authentication import AuthenticationFacade
 from models import Config, Model
-from prompt_api import  ChatHistory, MonitoringService
+from prompt_manager import  ChatHistory, MonitoringService
 
 
 class ChatManager:
@@ -26,7 +26,7 @@ class ChatManager:
     flexibility and avoiding unnecessary state management.
     """
 
-    def __init__(self, auth: AuthenticationFacade, monitoring: MonitoringService, client: Client) -> None:
+    def __init__(self, authenticator: AuthenticationFacade, monitor: MonitoringService) -> None:
         """
         Initializes the ChatManager with authentication, monitoring, and API client.
 
@@ -34,12 +34,12 @@ class ChatManager:
         :param monitoring: Manages chat monitoring and alerts.
         :param client: Handles communication with the language model API.
         """
-        self.auth = auth
-        self.monitoring = monitoring
-        self.client = client
+        self.auth = authenticator
+        self.monitor = monitor
         self.chat_history = ChatHistory()  # Structured message storage
+        self.developer_message = ""
 
-    def send_message(self, message: str, user_id: str, config: Config, model: Model) -> str:
+    def send_message(self, message: str, config: Config, model: Model, user: str = "user") -> str:
         """
         Processes a user message, stores it in chat history, and retrieves a response.
 
@@ -50,37 +50,20 @@ class ChatManager:
         :return: AI-generated response.
         """
         # Store user message
+        if self.developer_message != model.developer:
+            self.chat_history.add_message("developer", model.developer)
+            self.developer_message = model.developer
+        
         self.chat_history.add_message("user", message)
-
-        # Send request to the API using provided configuration
-        api_response = self.client.send_request(config)
-
-        # Extract AI response content
-        ai_response = api_response["choices"][0]["message"]["content"]
-
-        # Store AI response in history
-        self.chat_history.add_message("assistant", ai_response)
 
         # Notify monitoring system
         #self.monitoring.notify(user_id, message, ai_response)
 
         # Generate assistant response via authenticated client
-        response = self.auth.get_client().chat.completions.create(
+        api_response = self.auth.get_client().chat.completions.create(
             model=model.type,
-            messages=[
-                {"role": "developer", "content": config.developer},
-                {"role": "user", "content": message},
-            ]
+            messages=self.chat_history.get_messages()
         )
-        # Store AI response in history
-        self.chat_history.add_message("assistant", response)
+        self.chat_history.add_response(api_response.choices[0].message)
+        return self.chat_history
 
-        return response
-
-    #def get_chat_history(self) -> List[dict]:
-    #    """
-    #    Retrieve the stored chat history in a structured format.
-
-    #    :return: List of chat messages as dictionaries.
-    #    """
-    #    return self.chat_history.get_history()

@@ -1,7 +1,6 @@
 from authentication import SessionManager
 from typing import Optional
 from openai import OpenAI
-from openai import OpenAI
 
 
 
@@ -9,6 +8,7 @@ class AuthenticationFacade:
     def __init__(self):
         self.session_manager = SessionManager()
         self.client = None
+        self.correct_login = False
 
     def login(self, api_key: Optional[str] = None):
         
@@ -23,13 +23,18 @@ class AuthenticationFacade:
         
         if self.client is None:
             self.client = OpenAI(api_key=self.session_manager.api_key)
+        self.correct_login = True
 
     def get_client(self):
-        return self.client         
-
+        if self.correct_login:
+            return self.client
+        else:
+            print("The Authenticator was not able to login or it was not logged")
+            return None
 
     def logout(self):
         self.session_manager.clear_session()
+        self.correct_login = False
         print("Logout successful.")
 
     def is_logged_in(self):
