@@ -50,22 +50,48 @@ class ChatManager:
         :return: AI-generated response.
         """
         # Store user message
-        if self.developer_message != model.developer:
-            self.chat_history.add_message("developer", model.developer)
-            self.developer_message = model.developer
+        #if self.developer_message != model.developer:
+        #    self.chat_history.add_message("developer", model.developer)
+        #    self.developer_message = model.developer
         
         self.chat_history.add_message("user", message)
+        """
+                # Notify monitoring system
+                #self.monitoring.notify(user_id, message, ai_response)
 
-        # Notify monitoring system
-        #self.monitoring.notify(user_id, message, ai_response)
-
-        # Generate assistant response via authenticated client
-        api_response = self.auth.get_client().chat.completions.create(
-            model=model.type,
-            messages=self.chat_history.get_messages()
-        )
-        self.chat_history.add_response(api_response.choices[0].message)
-        return self.chat_history
+                # Generate assistant response via authenticated client
+                api_response = self.auth.get_client().chat.completions.create(
+                    model=model.type,
+                    messages=self.chat_history.get_messages(),
+                    tools = model.tools_list.get_all_schemas()
+                )
+                
+                import json
+                if api_response.choices[0].message.tool_calls is not None:
+                    tool_call = api_response.choices[0].message.tool_calls[0]
+                    function_name = tool_call.function.name
+                    function_args = json.loads(tool_call.function.arguments)
+                    result = model.tools_list.get_tool_by_name(function_name).call_function(function_args)
+                    
+                    messages= self.chat_history.get_messages()
+                    messages.append(api_response.choices[0].message)
+                    messages.append({                               # append result message
+            "role": "tool",
+            "tool_call_id": tool_call.id,
+            "content": str(result)
+        })
+                    #self.chat_history.add_message("assistant",result)
+                    #self.chat_history.add_message("user","You determine the answer from my question before, but now answer the question as before with the answer you got and not calling any function")
+                    
+                    # Generate assistant response via authenticated client
+                    api_response = self.auth.get_client().chat.completions.create(
+                        model=model.type,
+                        messages=messages,#self.chat_history.get_messages(),
+                        tools = model.tools_list.get_all_schemas()
+                    )
+                    print(api_response.choices[0].message)
+                """#self.chat_history.add_response(api_response.choices[0].message)
+                #return self.chat_history
 
     def clear_history(self):
         self.chat_history.clear_messages()        

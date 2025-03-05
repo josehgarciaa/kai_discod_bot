@@ -7,6 +7,7 @@ of various parameters such as administrator, modalities, audio settings, and mor
 """
 
 from typing import Any, Dict, List, Optional
+from tools import ModelTool, ModelToolList
 
 
 class Model:
@@ -31,6 +32,8 @@ class Model:
         self.tools: Optional[List[Any]] = None
         self.parallel_tool_calls: bool = True
         self.user: str = ""
+        self.tools_list: Optional[ModelToolList] = None
+        self.tools_schema = None
 
     def set_developer_instruction(self, developer: str) -> "Model":
         """
@@ -105,16 +108,39 @@ class Model:
         self.stream_options = stream_options
         return self
 
-    def set_tools(self, tools: List[Any]) -> "Model":
+
+    def set_tool(self, external_tool: object) -> "Model":
         """
         Provide a list of tools (functions) the model may call.
 
         :param tools: A list of tool definitions (up to 128).
         :return: The current Model instance (for fluent chaining).
         """
-        self.tools = tools
+        
+        if self.tools_list is None:
+            self.tools_list = ModelToolList()
+        
+        self.tools_list.add_tool( ModelTool().set_function(external_tool) )
+        
         return self
 
+
+    def set_tools(self, external_tools: List[object]) -> "Model":
+        """
+        Provide a list of tools (functions) the model may call.
+
+        :param tools: A list of tool definitions (up to 128).
+        :return: The current Model instance (for fluent chaining).
+        """
+        
+        if self.tools_list is None:
+            self.tools_list = ModelToolList()
+        
+        for external_tool in external_tools:
+            self.set_tool(external_tool)
+
+        return self
+        
     def enable_parallel_tool_calls(self, enable: bool) -> "Model":
         """
         Allow or disallow parallel calls to multiple tools.
