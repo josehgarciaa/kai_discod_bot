@@ -69,7 +69,7 @@ class ChatManager:
 
             #Determine the actions to take based on the API response
             raw_api_response =  self.auth.get_client().chat.completions.create(
-                                model=model.type,
+                                model=model.model_type,
                                 messages=self.chat_history.messages(),
                                 tools = model.tools_list.get_all_schemas()
                                 )

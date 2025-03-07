@@ -23,7 +23,7 @@ class Model:
         can be overridden by calling the provided setter methods.
         """
         self.developer: str = "You are a useful assistant"
-        self.type: str = "gpt-4o-mini"
+        self.model_type: str = "gpt-4o-mini"
         self.modalities: Optional[List[str]] = ["text"]
         self.audio: Optional[Dict[str, Any]] = None
         self.response_format: Optional[Dict[str, Any]] = None
@@ -45,14 +45,14 @@ class Model:
         self.developer = developer
         return self
 
-    def set_model_type(self, administrator: str) -> "Model":
+    def set_model_type(self, model_type: str) -> "Model":
         """
         Set the administrator identifier for this model configuration.
 
         :param administrator: The admin or owner responsible for this model.
         :return: The current Model instance (for fluent chaining).
         """
-        self.administrator = administrator
+        self.model_type = model_type
         return self
 
 

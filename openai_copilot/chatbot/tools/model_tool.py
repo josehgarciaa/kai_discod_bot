@@ -18,7 +18,7 @@ class ModelTool:
         return self
     
     def call_function(self, arguments: dict):
-        self.raw_last_answer = self.tool_function(*arguments)
+        self.raw_last_answer = self.tool_function(**arguments)
         self.last_answer="You got the answer:"+str(self.raw_last_answer)+"now report it to the user"
         return self.raw_last_answer
     
