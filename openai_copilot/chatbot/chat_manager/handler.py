@@ -12,7 +12,7 @@ PEP 8 Compliance:
 """
 
 from authentication import AuthenticationService
-from chat_manager import ChatUserMessage, APIResponse
+from chat_manager import ChatUserMessage, APIResponse, ChatHistory, ClientAction
 
 class ChatManager:
     """
@@ -33,7 +33,7 @@ class ChatManager:
         """
         self.auth = authenticator
         #self.monitor = monitor
-        #self.chat_history = ChatHistory()  # Structured message storage
+        self.chat_history = ChatHistory()  # Structured message storage
         self.developer_message = ""
 
 
@@ -50,7 +50,7 @@ class ChatManager:
         """
         try:
             user_message = ChatUserMessage().handle(user_text)
-            self.chat_history.append(user_message)
+            self.chat_history.append_message(user_message)
             return True
         except:
             print("The user message could not be processed")
@@ -61,10 +61,12 @@ class ChatManager:
         Process an incoming ChatMessage and determine an appropriate response.
         This method decides which type of ChatResponse to return.
         """
-        model_config, model = chatbot  
-
+        model_config, model = chatbot          
+        api_response = APIResponse() 
+        
         #Check if more responses are necessary
-        while response.call_api():
+        while api_response.call_api():
+
             #Determine the actions to take based on the API response
             raw_api_response =  self.auth.get_client().chat.completions.create(
                                 model=model.type,
@@ -72,9 +74,25 @@ class ChatManager:
                                 tools = model.tools_list.get_all_schemas()
                                 )
             #handle the response
-            api_response = APIResponse().handle(raw_api_response)
-            self.chat_history.append(api_response)
-    
+            try:
+                api_response.handle(raw_api_response)
+            except:
+                raise print("problem here")
+            self.chat_history.append_message(api_response)
+
+            #Determine if the Api required an action from the client side
+            client_action = ClientAction()
+            if client_action.required(api_response):
+                try:
+                    client_action.execute(model, api_response)
+                except:
+                    print("problems")
+                    raise
+                self.chat_history.append_message(client_action)
+            
+
+            print(self.chat_history.messages)
+
         return api_response.readable()
 
     def clear_history(self):

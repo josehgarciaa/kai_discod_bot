@@ -1,65 +1,45 @@
-
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict
-from chat_manager import APIResponse, APIRequest
+from typing import List, Union, Iterable
+from chat_manager import APIResponse, ChatUserMessage, ClientAction
+
 
 @dataclass
 class ChatHistory:
-    messages: List[ChatMessage] = field(default_factory=list)
+    """
+    Stores the history of chat messages, allowing messages to be appended
+    and retrieved in an API-compatible format.
+    """
 
-    def add_message(self, user, message: dict) -> None:
-        """
-        Parse API response and add structured message.
-        """
-        if user == "user":
-            self.messages.append(ChatMessage().user(message))
+    history: List[dict] = field(default_factory=list)
 
-        if user == "developer":
-            self.messages.append(ChatMessage().developer(message))
+    def append_message(self, message: Union[ChatUserMessage,
+                                            APIResponse,
+                                            ClientAction]) -> None:
+        """
+        Appends a single message or multiple messages to the chat history.
 
-        if user == "assistant":
-            self.messages.append(ChatMessage().assistant(message))
+        Args:
+            message (ChatUserMessage | Iterable[ChatUserMessage]): 
+                A single ChatUserMessage or an iterable of ChatUserMessage instances.
 
+        Raises:
+            AttributeError: If an object does not have a `get_api_message()` method.
+        """                           
+        if isinstance(message, (ChatUserMessage,APIResponse)):
+            # Single message case
+            self.history.append(message.get_api_message())
+        elif isinstance(message, ClientAction):
+            # Handle multiple messages
+            for api_message in message.get_api_message():
+                self.history.append(api_message)
+        else:
+            raise AttributeError(f"Object {message} does not have 'get_api_message()' method.")
 
-        
-    def add_response(self, api_response_message: dict) -> None:
+    def messages(self) -> List[dict]:
         """
-        Parse API response and add structured message.
-        """
-        self.messages.append(ChatMessage().assistant(api_response_message))
+        Retrieves the entire chat history.
 
-    def add_developer(self, api_response_message: dict) -> None:
+        Returns:
+            List[dict]: A list of messages formatted as API-compatible dictionaries.
         """
-        Parse API response and add structured message.
-        """
-        self.messages.append(ChatMessage().developer(api_response_message))
-
-
-    def get_last_message(self) -> List[Dict[str, str]]:
-        """
-        Returns only role and content as a list of dicts (simplified history).
-        """
-        return self.messages[-1].content
-        
-    def get_messages(self) -> List[Dict[str, str]]:
-        """
-        Returns only role and content as a list of dicts (simplified history).
-        """
-        return [{"role": msg.role, "content": msg.content} for msg in self.messages]
-
-    def clear_messages(self) -> List[Dict[str, str]]:
-        """
-        Returns only role and content as a list of dicts (simplified history).
-        """
-        self.messages= []
-
-
-    def __repr__(self) -> str:
-        """
-        Provide a concise string representation of the model configuration.
-        """
-        full_chat = ""
-        for msg in self.messages:
-            full_chat+="_role: "+msg.role+"\n"
-            full_chat+=msg.content+"\n"
-        return full_chat
+        return self.history

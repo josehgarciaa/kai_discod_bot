@@ -1,4 +1,4 @@
-from openai.types.chat import ChatCompletionUserMessageParam
+from openai.types.chat import ChatCompletionUserMessageParam, ChatCompletionMessageParam
 
 
 
@@ -12,14 +12,14 @@ class ChatUserMessage:
         before being sent to the chat server.
     """
 
-    def __init__(self, user_content):
+    def __init__(self):
         """
         Initializes an empty processed message object.
         """
-        self.processed_message = self.process(user_content)
-        
+        self.api_compatible_message = None    
+        self.readable_content =None     
 
-    def process(self, content: str) -> None:
+    def handle(self, content: str) -> None:
         """
         Processes the input message content and stores it in `processed_message`.
 
@@ -27,7 +27,16 @@ class ChatUserMessage:
             content (str): The raw text message from the user.
         """
         # More preprocessing can be added in future implementations
-        self.processed_message = ChatCompletionUserMessageParam(content=content)
-        return self.processed_message
-        
+        self.api_compatible_message = ChatCompletionUserMessageParam(role="user", content=content)
+
+        return self
+
+    def get_api_message(self):
+        return self.api_compatible_message
+
+    
+    def readable(self):
+        message = self.api_compatible_message
+        self.readable_content = "role:"+message.get("role")+"\n"+message.get("content")
+        return self.readable_content         
 

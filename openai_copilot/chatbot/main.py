@@ -40,7 +40,7 @@ if __name__ == "__main__":
     manager.login()
 
     # User friendly structured model building clearly:
-    model_config = ConfigDirector.default_config()
+    model_config = ConfigDirector.default_config() #default_config
     model = Director.python_programmer()
     
 
@@ -49,12 +49,11 @@ if __name__ == "__main__":
     
     manager = ChatManager(authenticator = manager)
 
-    message = "how do you get the values only of a dictionary"
-    message = "in openai api have the object ChatCompletionMessage is it possible to initialize it with a user call?"
-    
+    message = "can you sum a number 1 and 2 using the tools"
     if manager.send_message(message):
         chatbot = [model_config, model]
         response = manager.get_response(chatbot) 
+        print(response)
     else:
-        print("Problems processing data")    
-
+        print("Problems processing data")   
+        
