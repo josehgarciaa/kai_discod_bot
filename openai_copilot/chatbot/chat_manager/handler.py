@@ -11,11 +11,8 @@ PEP 8 Compliance:
 - Uses @dataclass for structured data management.
 """
 
-from typing import List
 from authentication import AuthenticationService
-from models import Config, Model
-from chat_manager import  ChatHistory, MonitoringService
-
+from chat_manager import ChatUserMessage, APIResponse
 
 class ChatManager:
     """
@@ -26,7 +23,7 @@ class ChatManager:
     flexibility and avoiding unnecessary state management.
     """
 
-    def __init__(self, authenticator: AuthenticationService, monitor: MonitoringService) -> None:
+    def __init__(self, authenticator: AuthenticationService) -> None:
         """
         Initializes the ChatManager with authentication, monitoring, and API client.
 
@@ -35,64 +32,51 @@ class ChatManager:
         :param client: Handles communication with the language model API.
         """
         self.auth = authenticator
-        self.monitor = monitor
-        self.chat_history = ChatHistory()  # Structured message storage
+        #self.monitor = monitor
+        #self.chat_history = ChatHistory()  # Structured message storage
         self.developer_message = ""
 
-    def send_message(self, message: str, config: Config, model: Model, user: str = "user") -> str:
-        """
-        Processes a user message, stores it in chat history, and retrieves a response.
 
-        :param message: The input message from the user.
-        :param user_id: Unique identifier for the user.
-        :param config: The configuration settings for the model.
-        :param model: The specific model instance to use for the request.
-        :return: AI-generated response.
+    def send_message(self, user_text: str) -> bool:
         """
-        # Store user message
-        #if self.developer_message != model.developer:
-        #    self.chat_history.add_message("developer", model.developer)
-        #    self.developer_message = model.developer
-        
-        self.chat_history.add_message("user", message)
-        """
-                # Notify monitoring system
-                #self.monitoring.notify(user_id, message, ai_response)
+        Processes the user's message, stores it internally, and returns a status message.
 
-                # Generate assistant response via authenticated client
-                api_response = self.auth.get_client().chat.completions.create(
-                    model=model.type,
-                    messages=self.chat_history.get_messages(),
-                    tools = model.tools_list.get_all_schemas()
-                )
-                
-                import json
-                if api_response.choices[0].message.tool_calls is not None:
-                    tool_call = api_response.choices[0].message.tool_calls[0]
-                    function_name = tool_call.function.name
-                    function_args = json.loads(tool_call.function.arguments)
-                    result = model.tools_list.get_tool_by_name(function_name).call_function(function_args)
-                    
-                    messages= self.chat_history.get_messages()
-                    messages.append(api_response.choices[0].message)
-                    messages.append({                               # append result message
-            "role": "tool",
-            "tool_call_id": tool_call.id,
-            "content": str(result)
-        })
-                    #self.chat_history.add_message("assistant",result)
-                    #self.chat_history.add_message("user","You determine the answer from my question before, but now answer the question as before with the answer you got and not calling any function")
-                    
-                    # Generate assistant response via authenticated client
-                    api_response = self.auth.get_client().chat.completions.create(
-                        model=model.type,
-                        messages=messages,#self.chat_history.get_messages(),
-                        tools = model.tools_list.get_all_schemas()
-                    )
-                    print(api_response.choices[0].message)
-                """#self.chat_history.add_response(api_response.choices[0].message)
-                #return self.chat_history
+        Args:
+            user_text (str): The text input from the user.
+
+        Returns:
+            trhe: is process else no
+            
+        """
+        try:
+            user_message = ChatUserMessage().handle(user_text)
+            self.chat_history.append(user_message)
+            return True
+        except:
+            print("The user message could not be processed")
+            return False
+
+    def get_response(self, chatbot) -> APIResponse:
+        """
+        Process an incoming ChatMessage and determine an appropriate response.
+        This method decides which type of ChatResponse to return.
+        """
+        model_config, model = chatbot  
+
+        #Check if more responses are necessary
+        while response.call_api():
+            #Determine the actions to take based on the API response
+            raw_api_response =  self.auth.get_client().chat.completions.create(
+                                model=model.type,
+                                messages=self.chat_history.messages(),
+                                tools = model.tools_list.get_all_schemas()
+                                )
+            #handle the response
+            api_response = APIResponse().handle(raw_api_response)
+            self.chat_history.append(api_response)
+    
+        return api_response.readable()
 
     def clear_history(self):
-        self.chat_history.clear_messages()        
+        #self.chat_history.clear_messages()        
         self.developer_message = ""

@@ -1,6 +1,7 @@
+
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict
-from chat_manager import ChatMessage
+from chat_manager import APIResponse, APIRequest
 
 @dataclass
 class ChatHistory:
@@ -18,6 +19,7 @@ class ChatHistory:
 
         if user == "assistant":
             self.messages.append(ChatMessage().assistant(message))
+
 
         
     def add_response(self, api_response_message: dict) -> None:

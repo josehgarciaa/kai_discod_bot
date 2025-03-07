@@ -1,7 +1,7 @@
 
 from authentication import AuthenticationService
 from models import Config, ConfigDirector, Model,Director
-from chat_manager import ChatManager, MonitoringService
+from chat_manager import ChatManager
 
 if __name__ == "__main__":
 
@@ -46,11 +46,15 @@ if __name__ == "__main__":
 
     model.set_tools([translation,sum_two_numbers])
 
-    monitor = MonitoringService()
     
-    chatbot = ChatManager(authenticator = manager, monitor = monitor)
+    manager = ChatManager(authenticator = manager)
 
     message = "how do you get the values only of a dictionary"
     message = "in openai api have the object ChatCompletionMessage is it possible to initialize it with a user call?"
-    response = chatbot.send_message(message, model_config, model)
-    print(response)
+    
+    if manager.send_message(message):
+        chatbot = [model_config, model]
+        response = manager.get_response(chatbot) 
+    else:
+        print("Problems processing data")    
+
